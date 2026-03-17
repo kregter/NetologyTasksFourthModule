@@ -1,22 +1,35 @@
-﻿#include <iostream>
-#include <iomanip>
+#include <iostream>
 #include <vector>
 
 template <class T>
 class Table {
-    int rows, cols;
-    T* data;
+private:
+    int rows_, cols_;
+    std::vector<std::vector<T>> data_;
 public:
-    Table(int r, int c) : rows(r), cols(c) {
-        data = new int[rows * cols] {};
+    Table(int r, int c) : rows_(r), cols_(c) {
+        data_.resize(rows_);
+        for (int i = 0; i < rows_; i++) {
+            data_[i].resize(cols_);
+        }
     }
 
-    ~Table() {
-        delete[] data;
+    const std::vector<T> operator[] (int row) const {
+        if (row >= rows_ || row < 0) {
+            throw std::out_of_range("Rows out of range");
+        }
+        return data_[row];
     }
 
-    int* operator[](int row) {
-        return data + row * cols;
+    std::vector<T>& operator[] (int row) {
+        if (row >= rows_ || row < 0) {
+            throw std::out_of_range("Rows out of range");
+        }
+        return data_[row];
+    }
+
+    int Size() const {
+        return rows_ * cols_;
     }
 };
 
@@ -24,14 +37,18 @@ public:
 int main()
 {
 	setlocale(LC_ALL, "rus");
-	
-    auto test = Table<int>(2, 2);
-    test[0][0] = 4;
+    try {
+        Table<int> test(3, 3);
+        test[0][0] = 4;
 
-    std::cout << test[0][0];
+        std::cout << test.Size() << std::endl;
 
+        std::cout << test[0][0];
+    }
+    catch(std::exception e) {
+        std::cout << e.what() << std::endl;
+    }
+    
 	return 0;
 
 }
-
-
